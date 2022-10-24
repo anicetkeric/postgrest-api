@@ -1,1 +1,1 @@
-# postgrest-api
+# Building REST APIs quickly using PostgREST
