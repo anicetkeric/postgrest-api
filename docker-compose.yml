@@ -1,0 +1,56 @@
+# docker-compose.yml
+version: '3'
+services:
+
+          
+# postgrest-db
+  db:
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: bookdb
+      POSTGRES_USER: bookuser
+      POSTGRES_PASSWORD: password
+    volumes: 
+      - "./pgdata:/var/lib/postgresql/data"
+      - "./extension/pgjwt.control:/usr/share/postgresql/14/extension/pgjwt.control"
+      - "./extension/pgjwt--0.1.0--0.1.1.sql:/usr/share/postgresql/14/extension/pgjwt--0.1.0--0.1.1.sql" 
+      - "./extension/pgjwt--0.1.1.sql:/usr/share/postgresql/14/extension/pgjwt--0.1.1.sql"
+      - "./extension/pgjwt--0.1.1--0.2.0.sql:/usr/share/postgresql/14/extension/pgjwt--0.1.1--0.2.0.sql"        
+      - "./scripts/init-db.sql:/docker-entrypoint-initdb.d/init01.sql"
+      - "./scripts/auth.sql:/docker-entrypoint-initdb.d/init02.sql"
+
+  server:
+    image: postgrest/postgrest
+    ports:
+      - "3000:3000"
+    environment:
+      PGRST_DB_URI: postgres://bookuser:password@db:5432/bookdb
+      PGRST_DB_SCHEMA: rest
+      PGRST_DB_ANON_ROLE: anonymous
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:3000
+      PGRST_JWT_SECRET: Q!6HLp@B5wD24Pbq*LNd!%S4&H%ly7bt
+    depends_on:
+      - db
+       
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    links:
+      - db      
+    volumes:
+       - ./pgadmin:/root/.pgadmin
+    ports:
+      - "8082:80"
+  
+  swagger:
+   image: swaggerapi/swagger-ui
+   ports:
+    - "8080:8080"
+   expose:
+    - "8080"
+   environment:
+    API_URL: http://localhost:3000/  
