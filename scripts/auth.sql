@@ -1,14 +1,15 @@
 
 ALTER DATABASE bookdb SET "app.jwt_secret" TO 'Q!6HLp@B5wD24Pbq*LNd!%S4&H%ly7bt';
 
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
 -- add custom extensions
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS pgjwt;
 
+
+-- Authentication management schema
 CREATE SCHEMA IF NOT EXISTS auth;
 
+-- users table
 CREATE TABLE IF NOT EXISTS auth.users (
   email			  TEXT PRIMARY KEY CHECK ( email ~* '^.+@.+\..+$' ),
   password	  TEXT NOT NULL CHECK (LENGTH(password) < 512),

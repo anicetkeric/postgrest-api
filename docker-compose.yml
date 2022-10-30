@@ -1,7 +1,6 @@
 # docker-compose.yml
 version: '3'
 services:
-
           
 # postgrest-db
   db:
@@ -33,18 +32,6 @@ services:
       PGRST_JWT_SECRET: Q!6HLp@B5wD24Pbq*LNd!%S4&H%ly7bt
     depends_on:
       - db
-       
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-    links:
-      - db      
-    volumes:
-       - ./pgadmin:/root/.pgadmin
-    ports:
-      - "8082:80"
   
   swagger:
    image: swaggerapi/swagger-ui
